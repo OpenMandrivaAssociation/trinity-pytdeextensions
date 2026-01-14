@@ -1,53 +1,35 @@
-#
-# Please submit bugfixes or comments via http://www.trinitydesktop.org/
-#
+%bcond clang 1
 
 # TDE variables
 %define tde_epoch 2
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
+%define pkg_rel 1
+
 %define tde_pkg pytdeextensions
 %define tde_prefix /opt/trinity
-%define tde_bindir %{tde_prefix}/bin
-%define tde_datadir %{tde_prefix}/share
-%define tde_docdir %{tde_datadir}/doc
-%define tde_includedir %{tde_prefix}/include
-%define tde_libdir %{tde_prefix}/%{_lib}
-%define tde_mandir %{tde_datadir}/man
-%define tde_tdedocdir %{tde_docdir}/tde
-%define tde_tdeincludedir %{tde_includedir}/tde
 
-%if 0%{?mdkversion}
+
 %undefine __brp_remove_la_files
 %define dont_remove_libtool_files 1
 %define _disable_rebuild_configure 1
 %define _python_bytecompile_build 0
-%endif
 
 %define tarball_name %{tde_pkg}-trinity
-%global toolchain %(readlink /usr/bin/cc)
 
 
 Name:		trinity-%{tde_pkg}
 Epoch:		%{tde_epoch}
 Version:	0.4.0
-Release:	%{?tde_version}_%{?!preversion:1}%{?preversion:0_%{preversion}}%{?dist}
+Release:	%{?tde_version}_%{?!preversion:%{pkg_rel}}%{?preversion:0_%{preversion}}%{?dist}
 Summary:	Python packages to support TDE applications (scripts)
 Group:		Development/Libraries/Python
 URL:		http://www.trinitydesktop.org/
 #URL:		http://www.simonzone.com/software/pykdeextensions
 
-%if 0%{?suse_version}
-License:	GPL-2.0+
-%else
 License:	GPLv2+
-%endif
 
-#Vendor:		Trinity Desktop
-#Packager:	Francois Andriot <francois.andriot@free.fr>
-
-Prefix:		%{tde_prefix}
 
 Source0:	https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/libraries/%{tarball_name}-%{tde_version}%{?preversion:~%{preversion}}.tar.xz
 
@@ -56,9 +38,7 @@ BuildRequires:	trinity-tdelibs-devel >= %{tde_version}
 BuildRequires:	desktop-file-utils
 BuildRequires:	gettext
 BuildRequires:	autoconf automake libtool m4
-%if "%{?toolchain}" != "clang"
-BuildRequires:	gcc-c++
-%endif
+%{!?with_clang:BuildRequires:	gcc-c++}
 
 BuildRequires:	pytqt-devel >= %{?epoch:%{epoch}:}3.18.1
 BuildRequires:	trinity-pytde-devel
@@ -78,8 +58,7 @@ Requires:		sip4-tqt >= 4.10.5
 %global __python %__python3
 %global python_sitearch %{python3_sitearch}
 %{!?python_sitearch:%global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-BuildRequires:	%{python}
-BuildRequires:	%{python}-devel
+BuildRequires:	pkgconfig(python)
 %endif
 
 
@@ -95,8 +74,8 @@ to support the creation and installation of TDE applications.
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS ChangeLog COPYING NEWS README TODO
-%{tde_datadir}/apps/pytdeextensions/
-%{tde_tdedocdir}/HTML/en/pytdeextensions/
+%{tde_prefix}/share/apps/pytdeextensions/
+%{tde_prefix}/share/doc/tde/HTML/en/pytdeextensions/
 %{python_sitearch}/*
 
 ##########
@@ -113,7 +92,7 @@ This package contains the libpythonize library files.
 
 %files -n trinity-libpythonize0
 %defattr(-,root,root,-)
-%{tde_libdir}/libpythonize.so.*
+%{tde_prefix}/%{_lib}/libpythonize.so.*
 
 ##########
 
@@ -133,9 +112,9 @@ This package contains the libpythonize development files.
 
 %files -n trinity-libpythonize-devel
 %defattr(-,root,root,-)
-%{tde_tdeincludedir}/*.h
-%{tde_libdir}/libpythonize.la
-%{tde_libdir}/libpythonize.so
+%{tde_prefix}/include/tde/*.h
+%{tde_prefix}/%{_lib}/libpythonize.la
+%{tde_prefix}/%{_lib}/libpythonize.so
 
 ##########
 
@@ -151,14 +130,6 @@ files.
 
 %files devel
 
-##########
-
-%if 0%{?suse_version} && 0%{?opensuse_bs} == 0
-%debug_package
-%endif
-
-##########
-
 %prep
 %autosetup -p1 -n %{tarball_name}-%{tde_version}%{?preversion:~%{preversion}}
 
@@ -168,37 +139,19 @@ for f in src/*.py; do
   %__sed -i "${f}" \
     -e "s|'pytde-dir=',None,|'pytde-dir=','%{python_sitearch}',|g" \
     -e "s|self.pytde_dir = None|self.pytde_dir = \"%{python_sitearch}\"|g" \
-    -e "s|'kde-lib-dir=',None,|'kde-lib-dir=','%{tde_libdir}',|g" \
-    -e "s|self.kde_lib_dir = None|self.kde_lib_dir = \"%{tde_libdir}\"|g" \
-    -e "s|'kde-kcm-lib-dir=',None,|'kde-kcm-lib-dir=','%{tde_libdir}/trinity',|g" \
-    -e "s|self.kde_kcm_lib_dir = None|self.kde_kcm_lib_dir = \"%{tde_libdir}/trinity\"|g" \
-    -e "s|%{tde_includedir}/tde|%{tde_tdeincludedir}|g" \
+    -e "s|'kde-lib-dir=',None,|'kde-lib-dir=','%{tde_prefix}/%{_lib}',|g" \
+    -e "s|self.kde_lib_dir = None|self.kde_lib_dir = \"%{tde_prefix}/%{_lib}\"|g" \
+    -e "s|'kde-kcm-lib-dir=',None,|'kde-kcm-lib-dir=','%{tde_prefix}/%{_lib}/trinity',|g" \
+    -e "s|self.kde_kcm_lib_dir = None|self.kde_kcm_lib_dir = \"%{tde_prefix}/%{_lib}/trinity\"|g" \
+    -e "s|%{tde_prefix}/include/tde|%{tde_prefix}/include/tde|g" \
     -e 's|"/kde"|"/tde"|' \
     -e 's|"-I" + self.kde_inc_dir + "/tde"|"-I/opt/trinity/include"|' \
     -e "s|/usr/lib/pyshared/python\*|%{python_sitearch}|g"
 done
 
-# Fix FTBFS on RHEL 5
-%if 0%{?rhel} == 5
-%__sed -i "src/pythonize."* -e "s|const char \*object|char \*object|g"
-%endif
-
-%if 0%{?fedora} >= 30 || 0%{?rhel} >= 8 || 0%{?mgaversion} >= 8 || 0%{?sle_version} >= 150600 || 0%{?suse_version} >= 1699
-%__sed -i "app_templates/kcontrol_module/setup.py" \
-          "app_templates/kcontrol_module/src/kcontrol_module.py" \
-          "app_templates/kdeapp/setup.py" \
-          "app_templates/kdeapp/src/kdeapp.py" \
-          "app_templates/kdeutility/setup.py" \
-          "app_templates/kdeutility/src/kdeutility.py" \
-          "app_templates/tdeioslave/setup.py" \
-          "app_templates/tdeioslave/src/tdeioslave.py" \
-  -e "s|/usr/bin/python|/usr/bin/env %{python}|"
-%endif
-
-
 %build
 unset QTDIR QTINC QTLIB
-export PATH="%{tde_bindir}:${PATH}"
+export PATH="%{tde_prefix}/bin:${PATH}"
 
 %__mkdir_p build
 %__python ./setup.py build_libpythonize
@@ -206,7 +159,7 @@ export PATH="%{tde_bindir}:${PATH}"
 
 %install
 unset QTDIR QTINC QTLIB
-export PATH="%{tde_bindir}:${PATH}"
+export PATH="%{tde_prefix}/bin:${PATH}"
 
 # Avoids 'error: byte-compiling is disabled.' on Mandriva/Mageia
 # export PYTHONDONTWRITEBYTECODE=
@@ -214,15 +167,15 @@ export PATH="%{tde_bindir}:${PATH}"
 %__python ./setup.py install \
 	--root=%{buildroot} \
 	--prefix=%{tde_prefix} \
-	--install-clib=%{tde_libdir} \
-	--install-cheaders=%{tde_tdeincludedir} \
+	--install-clib=%{tde_prefix}/%{_lib} \
+	--install-cheaders=%{tde_prefix}/include/tde \
    -v
 
 # Removes BUILDROOT directory reference in installed files
 for f in \
-	%{buildroot}%{tde_libdir}/libpythonize.la \
-	%{buildroot}%{tde_datadir}/apps/pytdeextensions/app_templates/kcontrol_module/src/KcontrolModuleWidgetUI.py \
-	%{buildroot}%{tde_datadir}/apps/pytdeextensions/app_templates/kdeutility/src/KDEUtilityDialogUI.py \
+	%{buildroot}%{tde_prefix}/%{_lib}/libpythonize.la \
+	%{buildroot}%{tde_prefix}/share/apps/pytdeextensions/app_templates/kcontrol_module/src/KcontrolModuleWidgetUI.py \
+	%{buildroot}%{tde_prefix}/share/apps/pytdeextensions/app_templates/kdeutility/src/KDEUtilityDialogUI.py \
 ; do
 	%__sed -i "${f}" -e "s|%{buildroot}||g"
 :
@@ -234,8 +187,8 @@ done
 %__rm -rf %{buildroot}%{tde_prefix}/lib/python*/site-packages
 
 # Removes useless files
-%__rm -rf %{?buildroot}%{tde_libdir}/*.a
+%__rm -rf %{?buildroot}%{tde_prefix}/%{_lib}/*.a
 
 # Fix permissions on include files
-%__chmod 644 %{?buildroot}%{tde_tdeincludedir}/*.h
+%__chmod 644 %{?buildroot}%{tde_prefix}/include/tde/*.h
 
