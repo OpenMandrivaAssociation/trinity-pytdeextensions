@@ -43,7 +43,7 @@ BuildRequires:	trinity-pytqt-tools
 Requires:		pytqt
 Requires:		trinity-pytde
 
-Requires:		trinity-libpythonize0 = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:		trinity-libpythonize0 = %{EVRD}
 
 # SIP
 BuildRequires:	sip4-tqt-devel >= 4.10.5
@@ -56,11 +56,12 @@ Requires:		sip4-tqt >= 4.10.5
 %global python_sitearch %{python3_sitearch}
 %{!?python_sitearch:%global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 BuildRequires:	pkgconfig(python)
+BuildRequires:    python%{pyver}dist(setuptools)
 %endif
 
 
-Obsoletes:		trinity-pykdeextensions < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:		trinity-pykdeextensions = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:		trinity-pykdeextensions < %{EVRD}
+Provides:		trinity-pykdeextensions = %{EVRD}
 
 
 %description
@@ -96,10 +97,10 @@ This package contains the libpythonize library files.
 %package -n trinity-libpythonize-devel
 Summary:	Python packages to support TDE applications (development)
 Group:		Development/Libraries/Python
-Requires:	trinity-libpythonize0 = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:	trinity-libpythonize0 = %{EVRD}
 
-Obsoletes:	trinity-libpythonize0-devel < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:	trinity-libpythonize0-devel = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:	trinity-libpythonize0-devel < %{EVRD}
+Provides:	trinity-libpythonize0-devel = %{EVRD}
 
 %description -n trinity-libpythonize-devel
 PyTDE Extensions is a collection of software and Python packages
@@ -118,8 +119,8 @@ This package contains the libpythonize development files.
 %package devel
 Summary:	Meta-package to install all pytdeextensions development files
 Group:		Development/Libraries/Python
-Requires:	%{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:	trinity-libpythonize-devel = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:	%{name} = %{EVRD}
+Requires:	trinity-libpythonize-devel = %{EVRD}
 
 %description devel
 This package is a meta-package to install all pytdeextensions development
