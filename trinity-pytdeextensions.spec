@@ -66,6 +66,9 @@ Provides:		trinity-pykdeextensions = %{EVRD}
 PyTDE Extensions is a collection of software and Python packages
 to support the creation and installation of TDE applications.
 
+%patchlist
+trinity-pytdeextensions-fix-setup_py.patch
+
 
 %files
 %defattr(-,root,root,-)
