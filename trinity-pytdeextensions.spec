@@ -19,7 +19,7 @@
 
 Name:		trinity-%{tde_pkg}
 Version:	0.4.0
-Release:	%{?tde_version:%{tde_version}_}2
+Release:	%{?tde_version:%{tde_version}_}3
 Summary:	Python packages to support TDE applications (scripts)
 Group:		Development/Libraries/Python
 URL:		http://www.trinitydesktop.org/
@@ -50,14 +50,12 @@ BuildRequires:	sip4-tqt-devel >= 4.10.5
 Requires:		sip4-tqt >= 4.10.5
 
 # PYTHON support
-%if "%{python}" == ""
 %global python python3
 %global __python %__python3
 %global python_sitearch %{python3_sitearch}
 %{!?python_sitearch:%global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 BuildRequires:	pkgconfig(python)
 BuildRequires:    python%{pyver}dist(setuptools)
-%endif
 
 
 Obsoletes:		trinity-pykdeextensions < %{EVRD}
