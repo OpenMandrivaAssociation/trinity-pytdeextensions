@@ -1,0 +1,83 @@
+diff -up pytdeextensions-trinity-14.1.6/src/tdedistutils.py.omv pytdeextensions-trinity-14.1.6/src/tdedistutils.py
+--- pytdeextensions-trinity-14.1.6/src/tdedistutils.py.omv	2026-05-23 23:14:38.370040593 -0400
++++ pytdeextensions-trinity-14.1.6/src/tdedistutils.py	2026-05-23 23:15:25.910628702 -0400
+@@ -363,18 +363,18 @@ class InstallApplicationDataAndLinks(ins
+         prefix = self.install_dir
+         if prefix[-1] != os.sep:
+             prefix = prefix + os.sep
+-        self.outfiles.extend(compile_tqtdesigner(self.outfiles, force=1, prefix=prefix, base_dir=install_cmd.prefix, dry_run=self.dry_run))
++        self.outfiles.extend(compile_tqtdesigner(self.outfiles, force=1, prefix=prefix, base_dir=install_cmd.prefix))
+ 
+         if not sys.dont_write_bytecode:
+             # Byte compile the .py files (unless it is disabled)
+             from distutils.util import byte_compile
+-            byte_compile(self.outfiles, optimize=0, force=1, prefix=prefix, base_dir=install_cmd.prefix, dry_run=self.dry_run)
++            byte_compile(self.outfiles, optimize=0, force=1, prefix=prefix, base_dir=install_cmd.prefix)
+ 
+         # Add the .pyc files to the list of outfiles.
+         self.outfiles.extend( [item+'c' for item in self.outfiles if item.endswith('.py')] )
+ 
+     def mkpath(self, name, mode=0o777):
+-        dir_util.mkpath(name, mode, dry_run=self.dry_run)
++        dir_util.mkpath(name, mode)
+         return name
+ 
+ ###########################################################################
+@@ -417,7 +417,7 @@ class InstallExecutableLinks(Command):
+         return self.outfiles or []
+ 
+     def mkpath(self, name, mode=0o777):
+-        dir_util.mkpath(name, mode, dry_run=self.dry_run)
++        dir_util.mkpath(name, mode)
+         return name
+ 
+ ###########################################################################
+@@ -1127,7 +1127,7 @@ class InstallKControlModule(Command):
+         return self.outfiles or []
+ 
+     def mkpath(self, name, mode=0o777):
+-        dir_util.mkpath(name, mode, dry_run=self.dry_run)
++        dir_util.mkpath(name, mode)
+         return name
+ 
+ ###########################################################################
+@@ -1247,7 +1247,7 @@ class InstallDocbookHTML(Command):
+         return self.outfiles or []
+ 
+     def mkpath(self, name, mode=0o777):
+-        dir_util.mkpath(name, mode, dry_run=self.dry_run)
++        dir_util.mkpath(name, mode)
+         return name
+ 
+ ###########################################################################
+@@ -1439,7 +1439,7 @@ class InstallI18NMessages(Command):
+         return self.outfiles
+ 
+     def mkpath(self, name, mode=0o777):
+-        dir_util.mkpath(name, mode, dry_run=self.dry_run)
++        dir_util.mkpath(name, mode)
+         return name
+ 
+ 
+@@ -2011,7 +2011,7 @@ class InstallTdeioslave(Command):
+         return self.outfiles or []
+ 
+     def mkpath(self, name, mode=0o777):
+-        dir_util.mkpath(name, mode, dry_run=self.dry_run)
++        dir_util.mkpath(name, mode)
+         return name
+ 
+ ###########################################################################
+
+ diff -up pytdeextensions-trinity-14.1.6/setup.py.omv pytdeextensions-trinity-14.1.6/setup.py
+--- pytdeextensions-trinity-14.1.6/setup.py.omv 2026-04-08 07:19:05.000000000 -0400
++++ pytdeextensions-trinity-14.1.6/setup.py     2026-05-23 23:20:01.666313825 -0400
+@@ -307,7 +307,7 @@ class InstallLibpythonize(Command):
+         return self.outfiles
+ 
+     def mkpath(self, name, mode=0o777):
+-        dir_util.mkpath(name, mode, dry_run=self.dry_run)
++        dir_util.mkpath(name, mode)
+         return name
+         
+ main()

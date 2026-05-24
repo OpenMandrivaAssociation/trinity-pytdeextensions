@@ -1,13 +1,8 @@
 %bcond clang 1
 
 # TDE variables
-%if "%{?tde_version}" == ""
-%define tde_version 14.1.5
-%endif
-
 %define tde_pkg pytdeextensions
 %define tde_prefix /opt/trinity
-
 
 %undefine __brp_remove_la_files
 %define dont_remove_libtool_files 1
@@ -18,8 +13,8 @@
 
 
 Name:		trinity-%{tde_pkg}
-Version:	0.4.0
-Release:	%{?tde_version:%{tde_version}_}3
+Version:	14.1.6
+Release:	1
 Summary:	Python packages to support TDE applications (scripts)
 Group:		Development/Libraries/Python
 URL:		http://www.trinitydesktop.org/
@@ -28,26 +23,26 @@ URL:		http://www.trinitydesktop.org/
 License:	GPLv2+
 
 
-Source0:	https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/libraries/%{tarball_name}-%{tde_version}.tar.xz
+Source0:	https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{version}/main/libraries/%{tarball_name}-%{version}.tar.xz
 
-BuildRequires:	trinity-tdelibs-devel >= %{tde_version}
+BuildRequires:	trinity-tdelibs-devel >= %{version}
+BuildRequires:	trinity-pytde-devel >= %{version}
+BuildRequires:	trinity-pytqt-tools >= %{version}
+BuildRequires:	pytqt-devel >= %{version}
+Requires:		pytqt
+Requires:		trinity-pytde >= %{version}
+
+Requires:		trinity-libpythonize0 = %{EVRD}
+
+# SIP
+BuildRequires:	sip4-tqt-devel >= %{version}
+Requires:		sip4-tqt >= %{version}
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	gettext
 BuildRequires:	autoconf automake libtool m4
 %{!?with_clang:BuildRequires:	gcc-c++}
 
-BuildRequires:	pytqt-devel >= %{?epoch:%{epoch}:}3.18.1
-BuildRequires:	trinity-pytde-devel
-BuildRequires:	trinity-pytqt-tools
-Requires:		pytqt
-Requires:		trinity-pytde
-
-Requires:		trinity-libpythonize0 = %{EVRD}
-
-# SIP
-BuildRequires:	sip4-tqt-devel >= 4.10.5
-Requires:		sip4-tqt >= 4.10.5
 
 # PYTHON support
 %global python python3
@@ -67,8 +62,7 @@ PyTDE Extensions is a collection of software and Python packages
 to support the creation and installation of TDE applications.
 
 %patchlist
-trinity-pytdeextensions-fix-setup_py.patch
-
+trinity-pytdeextensions-remove-dry-run.patch
 
 %files
 %defattr(-,root,root,-)
@@ -130,7 +124,7 @@ files.
 %files devel
 
 %prep
-%autosetup -p1 -n %{tarball_name}-%{tde_version}%{?preversion:~%{preversion}}
+%autosetup -p1 -n %{tarball_name}-%{version}
 
 # Changes library directory to 'lib64'
 # Also other fixes for distributions ...
