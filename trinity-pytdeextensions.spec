@@ -13,6 +13,9 @@
 
 
 Name:		trinity-%{tde_pkg}
+# The published build is 2:0.4.0-14.1.5_1. A build without this epoch
+# would lose to that package.
+Epoch:		2
 Version:	14.1.6
 Release:	1
 Summary:	Python packages to support TDE applications (scripts)
@@ -26,17 +29,19 @@ License:	GPLv2+
 Source0:	https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{version}/main/libraries/%{tarball_name}-%{version}.tar.xz
 
 BuildRequires:	trinity-tdelibs-devel >= %{version}
-BuildRequires:	trinity-pytde-devel >= %{version}
-BuildRequires:	trinity-pytqt-tools >= %{version}
-BuildRequires:	pytqt-devel >= %{version}
-Requires:		pytqt
-Requires:		trinity-pytde >= %{version}
+# 14.1.6-1 is the Python 3.14 module.
+BuildRequires:	trinity-pytde-devel >= %{version}-2
+BuildRequires:	trinity-pytqt-tools >= %{version}-2
+BuildRequires:	pytqt-devel >= %{version}-2
+Requires:		pytqt >= %{version}-2
+Requires:		trinity-pytde >= %{version}-2
 
 Requires:		trinity-libpythonize0 = %{EVRD}
 
 # SIP
-BuildRequires:	sip4-tqt-devel >= %{version}
-Requires:		sip4-tqt >= %{version}
+# 14.1.6-1 is the Python 3.14 module.
+BuildRequires:	sip4-tqt-devel >= %{version}-2
+Requires:		sip4-tqt >= %{version}-2
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	gettext
